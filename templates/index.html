@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Spam Detector</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <main>
+    <h1>📩 Spam / Ham Detector</h1>
+    <p class="sub">Paste a message below. Model is trained from MySQL.</p>
+
+    <textarea id="message" rows="6"
+      placeholder="e.g. WINNER!! You've won a FREE iPhone! Click http://bit.ly/xyz"></textarea>
+
+    <div class="buttons">
+      <button id="analyze">Analyze</button>
+      <button id="clear" class="ghost">Clear</button>
+      <button id="retrain" class="ghost">🔄 Retrain from DB</button>
+    </div>
+
+    <section id="result" class="hidden">
+      <div class="verdict">
+        <span id="label" class="badge"></span>
+        <span id="score"></span>
+      </div>
+      <div class="bar"><div id="bar-fill"></div></div>
+
+      <h3>Why?</h3>
+      <ul id="tokens"></ul>
+
+      <h3>Was this right?</h3>
+      <div class="buttons">
+        <button id="mark-spam" class="ghost">It's SPAM →</button>
+        <button id="mark-ham"  class="ghost">It's HAM →</button>
+      </div>
+      <p id="feedback-status" class="sub"></p>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let lastMessage = "";
+
+    async function analyze() {
+      const message = $("message").value;
+      if (!message.trim()) return;
+      lastMessage = message;
+
+      const res = await fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+      if (!res.ok) {
+        alert("Error: " + (await res.json()).detail);
+        return;
+      }
+      render(await res.json());
+    }
+
+    function render(data) {
+      const isSpam = data.label === "spam";
+      $("result").classList.remove("hidden");
+
+      const label = $("label");
+      label.textContent = isSpam ? "SPAM" : "HAM";
+      label.className = "badge " + (isSpam ? "spam" : "ham");
+
+      $("score").textContent = `spam probability: ${(data.spam_score * 100).toFixed(1)}%`;
+
+      const fill = $("bar-fill");
+      fill.style.width = `${data.spam_score * 100}%`;
+      fill.style.background = isSpam ? "#e74c3c" : "#2ecc71";
+
+      const ul = $("tokens");
+      ul.innerHTML = "";
+      for (const t of data.top_tokens) {
+        const li = document.createElement("li");
+        const dir = t.weight > 0 ? "→ spam" : "→ ham";
+        li.innerHTML = `<code>${t.token}</code> ${dir} <em>(${t.weight})</em>`;
+        ul.appendChild(li);
+      }
+
+      $("feedback-status").textContent = "";
+    }
+
+    async function sendFeedback(label) {
+      if (!lastMessage) return;
+      const res = await fetch("/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: lastMessage, label }),
+      });
+      const data = await res.json();
+      $("feedback-status").textContent =
+        `✅ Stored feedback: label="${data.label}" (row id ${data.id})`;
+    }
+
+    async function retrain() {
+      const res = await fetch("/retrain", { method: "POST" });
+      const data = await res.json();
+      alert(
+        `Retrained.\nSamples: ${data.num_samples}\n` +
+        `Spam: ${data.num_spam}, Ham: ${data.num_ham}\n` +
+        `Accuracy: ${data.accuracy}\nF1: ${data.f1_weighted}\n` +
+        `Version: ${data.model_version}`
+      );
+    }
+
+    $("analyze").addEventListener("click", analyze);
+    $("clear").addEventListener("click", () => {
+      $("message").value = "";
+      $("result").classList.add("hidden");
+    });
+    $("mark-spam").addEventListener("click", () => sendFeedback("spam"));
+    $("mark-ham").addEventListener("click",  () => sendFeedback("ham"));
+    $("retrain").addEventListener("click", retrain);
+    $("message").addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") analyze();
+    });
+  </script>
+</body>
+</html>
