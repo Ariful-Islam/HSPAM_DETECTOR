@@ -463,13 +463,12 @@ MIT License — see `LICENSE` for details.
 
 ## 📸 Screenshot
 
-```markdown
 <p align="center">
   <img src="docs/screenshot.png" alt="Spam detector UI showing a message classified as SPAM with 98% confidence" width="720">
   <br>
   <em>A spammy message classified with 98% confidence, with per-token explanations</em>
 </p>
-```
+
 ---
 
 **Made with ☕ and curiosity.**
