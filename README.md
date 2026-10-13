@@ -156,11 +156,7 @@ FLUSH PRIVILEGES;
 
 ### 5. Configure environment
 
-Copy `.env.example` to `.env` and edit:
-
-```bash
-cp .env.example .env
-```
+Change `.env` file with your environment details:
 
 ```env
 DB_HOST=127.0.0.1
@@ -178,16 +174,16 @@ python seed.py
 ```
 
 This creates the schema and loads the initial labeled dataset into `messages`.
-If you have the [SMS Spam Collection](https://kaggle.com)
+If you have the [SMS Spam Collection](https://www.kaggle.com/uciml/sms-spam-collection-dataset)
 file (`SMSSpamCollection.csv`) in the project root, it will be used automatically.
 Otherwise a small inline sample is used as a fallback.
 
 ### 7. Assign the frozen train/test split
 
 ```bash
-python -c "from app.database import SessionLocal; \
+python -c "from app.database import sessionLocal; \
            from app.split import assign_splits_once; \
-           db = SessionLocal(); print(assign_splits_once(db)); db.close()"
+           db = sessionLocal(); print(assign_splits_once(db)); db.close()"
 ```
 
 Expected output:
@@ -458,8 +454,8 @@ MIT License — see `LICENSE` for details.
 
 ## 🙏 Acknowledgements
 
-- [SMS Spam Collection Dataset](https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection)
-  — Almeida, T.A., Gómez Hidalgo, J.M., Yamakami, A. (2011)
+- [SMS Spam Collection Dataset](https://www.kaggle.com/uciml/sms-spam-collection-dataset)
+  — UCI Machine Learning, Esther Kim
 - [scikit-learn](https://scikit-learn.org/) for the ML primitives
 - [FastAPI](https://fastapi.tiangolo.com/) for the web layer
 
@@ -468,7 +464,7 @@ MIT License — see `LICENSE` for details.
 ## 📸 Screenshot
 
 ```markdown
-![HSPAM Detector UI](docs/Screenshot.png)
+![HSPAM Detector UI](/docs/Screenshot.png)
 ```
 
 ---
