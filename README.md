@@ -464,7 +464,7 @@ MIT License — see `LICENSE` for details.
 ## 📸 Screenshot
 
 ```markdown
-![HSPAM Detector UI](/docs/Screenshot.png)
+[HSPAM Detector UI](/docs/Screenshot.png)
 ```
 
 ---
