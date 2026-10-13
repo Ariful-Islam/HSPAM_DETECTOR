@@ -125,7 +125,7 @@ HSPAM_DETECTOR/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/HSPAM_DETECTOR.git
+git clone https://github.com/Ariful-Islam/HSPAM_DETECTOR.git
 cd HSPAM_DETECTOR
 ```
 
