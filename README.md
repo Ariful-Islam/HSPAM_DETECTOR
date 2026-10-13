@@ -464,9 +464,9 @@ MIT License — see `LICENSE` for details.
 ## 📸 Screenshot
 
 <p align="center">
-  <img src="/docs/mainscreenshot.png" alt="Spam detector UI showing a message classified as SPAM with 98% confidence" width="720">
+  <img src="/docs/spam_100.png" alt="Spam detector UI showing a message classified as SPAM with 100% confidence" width="720">
   <br>
-  <em>A spammy message classified with 98% confidence, with per-token explanations</em>
+  <em>A spammy message classified with 100% confidence, with per-token explanations</em>
 </p>
 
 ---
